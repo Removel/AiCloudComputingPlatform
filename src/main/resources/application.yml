@@ -1,3 +1,32 @@
-  spring:
-    application:
-      name: ACCP
+spring:
+  application:
+    name: ACCP
+  jackson:
+    # 忽略所有 null 字段
+    default-property-inclusion: non_null
+  #数据库的连接信息
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/accp
+    username: root
+    password: yyj060730
+  profiles:
+    active: prod
+  #redis缓存配置信息
+  data:
+    redis:
+      host: 172.29.253.152
+      port: 6379
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 100
+
+#Mybatis的相关配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:mapper/*.xml

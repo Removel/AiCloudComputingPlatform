@@ -1,4 +1,7 @@
 package com.removel.accp.mapper;
 
-public class ComputePowerSeckillMapper {
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface ComputePowerSeckillMapper {
 }
