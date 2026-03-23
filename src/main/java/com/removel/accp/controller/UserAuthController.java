@@ -21,4 +21,10 @@ public class UserAuthController {
         this.iUserService = iUserService;
     }
 
+    //登陆接口
+
+    //注册接口
+
+    //登出接口
+
 }

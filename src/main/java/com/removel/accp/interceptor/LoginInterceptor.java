@@ -46,6 +46,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
         // TODO: 5、将用户信息放入Thread local保存用户信息
         UserHolder.setUser(user);
+        // TODO: 6、放行请求
         return true;
     }
 
