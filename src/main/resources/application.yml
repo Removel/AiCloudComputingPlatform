@@ -15,7 +15,7 @@ spring:
   #redis缓存配置信息
   data:
     redis:
-      host: 172.29.253.152
+      host: 127.0.0.1
       port: 6379
       lettuce:
         pool:
@@ -25,7 +25,7 @@ spring:
           max-wait: 100
 
 #Mybatis的相关配置
-mybatis:
+mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
