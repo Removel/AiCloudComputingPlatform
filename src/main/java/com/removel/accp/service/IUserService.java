@@ -11,4 +11,7 @@ public interface IUserService extends IService<User> {
 
     void register(RegisterRequest registerRequest);
 
+    void sendCode(RegisterRequest registerRequest);
+
+    void logout(Integer id,String token);
 }

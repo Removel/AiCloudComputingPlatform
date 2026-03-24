@@ -21,14 +21,16 @@ public class WebConfig implements WebMvcConfigurer {
         // 登陆状态拦截器
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login")
-                .excludePathPatterns("/register")
+                .excludePathPatterns("/**/login")
+                .excludePathPatterns("/**/register")
+                .excludePathPatterns("/**/logout")
                 .order(1);
         // 刷新token拦截器
         registry.addInterceptor(refreshTokenInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login")
-                .excludePathPatterns("/register")
+                .excludePathPatterns("/**/login")
+                .excludePathPatterns("/**/register")
+                .excludePathPatterns("/**/logout")
                 .order(2);
     }
 }

@@ -23,6 +23,26 @@ spring:
           max-idle: 8
           min-idle: 0
           max-wait: 100
+  mail:
+    # 邮件服务器主机（QQ邮箱：smtp.qq.com；163邮箱：smtp.163.com；Gmail：smtp.gmail.com）
+    host: smtp.163.com
+    # 邮箱端口（SSL加密端口：465；非加密：587，推荐465）
+    port: 465
+    # 发件人邮箱账号
+    username: accp_official@163.com
+    # 邮箱授权码（重点：不是登录密码，需在邮箱后台开启SMTP获取）
+    password: WVbhz37BETmhYhfQ
+    # 编码格式
+    default-encoding: UTF-8
+    # SSL加密配置（必须配置，否则连接失败）
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
 
 #Mybatis的相关配置
 mybatis-plus:
