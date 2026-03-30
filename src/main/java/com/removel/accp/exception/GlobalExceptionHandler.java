@@ -14,4 +14,19 @@ public class GlobalExceptionHandler {
         return Result.fail(e.getCode(), e.getMessage());
     }
 
+    @ExceptionHandler(ParamValidationException.class)
+    public Result<String> ParamValidationExceptionHandler(ParamValidationException e) {
+        return Result.fail(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public Result<String> BusinessExceptionHandler(BusinessException e) {
+        return Result.fail(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public Result<String> exceptionHandler(Exception e) {
+        log.error("系统异常", e);
+        return Result.fail(500, "系统异常");
+    }
 }

@@ -32,9 +32,9 @@ public class UserAuthController {
     @PostMapping("/login")
     public Result<?> login(@RequestBody LoginRequest loginRequest){
         log.info("登录请求，登录方式为：{}",loginRequest.getLoginType());
-        User user = iUserService.login(loginRequest);
-        log.info("登录成功，登录用户信息为：{}",user);
-        return Result.success();
+        String token = iUserService.login(loginRequest);
+        log.info("登录成功，登录用户token为：{}",token);
+        return Result.success(token);
     }
     //注册接口
     @LogOperation

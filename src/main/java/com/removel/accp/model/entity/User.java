@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class User {
     //主键id，自增
     @TableId(value = "id",type = IdType.AUTO)
-    private int id;
+    private Integer id;
     //用户名
     @TableField("name")
     private String name;

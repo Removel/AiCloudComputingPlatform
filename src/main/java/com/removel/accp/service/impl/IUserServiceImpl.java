@@ -1,11 +1,12 @@
 package com.removel.accp.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.lang.intern.InternUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.removel.accp.exception.AuthException;
+import com.removel.accp.exception.BusinessException;
 import com.removel.accp.exception.ParamValidationException;
 import com.removel.accp.mapper.UserMapper;
 import com.removel.accp.model.constant.RedisConstant;
@@ -17,13 +18,14 @@ import com.removel.accp.model.request.RegisterRequest;
 import com.removel.accp.service.IUserService;
 import com.removel.accp.util.CacheClientUtil.RedisDataUtil;
 import com.removel.accp.util.EmailUtil;
+import com.removel.accp.util.UserHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisAccessor;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +44,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
     }
 
     @Override
-    public User login(LoginRequest loginRequest) {
+    public String login(LoginRequest loginRequest) {
         // TODO: 1、获取登录请求方式，对应请求方式构造queryWrapper
         String loginType = loginRequest.getLoginType();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -90,10 +92,11 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
             throw new AuthException("用户状态异常",400);
         }
         // TODO：4、向redis存入用户信息
+        user.setPassword(null); //将密码置空，隐藏敏感信息
         String token = UUID.randomUUID().toString();
         redisDataUtil.set(RedisConstant.LOGIN_CODE_KEY+token,user,RedisConstant.LOGIN_CODE_TTL, TimeUnit.DAYS);
-        // TODO: 5、返回用户信息
-        return user;
+        // TODO: 5、返回用户信息token
+        return token;
     }
 
     @Override
@@ -202,5 +205,121 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         }
         // TODO: 3、将用户信息从redis中删除
         redisDataUtil.delete(RedisConstant.LOGIN_CODE_KEY+token);
+    }
+
+    @Override
+    public User getUserInfo(String token) {
+        // TODO: 1、验证token是否符合最基本要求（但是一般拦截器和过滤器就会处理掉）
+        if(StrUtil.isBlank(token)){
+            throw new ParamValidationException("token不能为空",400);
+        }
+        // TODO: 2、从UserHolder当中查询用户信息
+        User user = UserHolder.getUser();
+        // TODO: 3、验证用户信息查询结果
+        // 3.1：是否存在
+        if(user == null||BeanUtil.isEmpty(user)){
+            log.error("token无效或者已经过期，当前token为：{}",token);
+            throw new ParamValidationException("token无效或者已经过期",400);
+        }
+        // TODO: 4、返回用户信息
+        return user;
+    }
+
+    @Transactional
+    @Override
+    public void deleteUser(Integer id) {
+        // TODO: 1、从UserHolder中获取到当前正在操作的用户
+        User currentUser = UserHolder.getUser();
+        log.info("当前正在操作的用户为：{}",currentUser);
+        // TODO: 2、权限判断
+        // 逻辑：不是自己并且不是管理员且管理员状态不对的无法操作
+        if (currentUser.getId() != id &&
+                (!currentUser.getRole().equals(UserRole.ADMIN) || !currentUser.getStatus().equals(Status.NORMAL))){
+            log.error("当前用户删除权限不足，当前用户id为：{}，想要操作的id为：{}",currentUser.getId(),id);
+            throw new AuthException("权限不足",403);
+        }
+        // TODO: 3、删除用户，修改状态实现逻辑删除
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        // 设置 id 等于传入的 id
+        updateWrapper.eq(User::getId, id)
+                // 设置status为cancelled，注销
+                .set(User::getStatus, Status.CANCELLED)
+                // 设置更新时间
+                .set(User::getUpdateTime,LocalDateTime.now());
+        // TODO: 4、执行更新
+        userMapper.update(null, updateWrapper);
+        log.info("更新完成");
+    }
+
+    @Transactional
+    @Override
+    public void updateUser(User user) {
+        // TODO: 1、从UserHolder中获取到当前正在操作的用户
+        User currentUser = UserHolder.getUser();
+        if(currentUser == null){
+            log.error("当前操作用户不存在");
+            throw new AuthException("当前操作用户不存在",403);
+        }
+        log.info("当前正在执行更新操作的用户为：{}",currentUser);
+
+        // TODO: 2、校验传入参数
+        if(user == null||BeanUtil.isEmpty(user)){
+            log.error("传入参数:user 为空");
+            throw new ParamValidationException("参数为空",400);
+        }
+
+        // TODO: 3、判断权限：
+        boolean isSelf = currentUser.getId()==user.getId();
+        boolean isAdmin = UserRole.ADMIN.equals(currentUser.getRole());
+        boolean isAdminNormal = isAdmin && Status.NORMAL.equals(currentUser.getStatus());
+
+        // 3.1 修改他人：必须是状态正常的管理员
+        if (!isSelf) {
+            if (!isAdminNormal) {
+                log.error("权限不足：用户{}尝试修改用户{}的信息，isAdmin={}, statusNormal={}",
+                        currentUser.getId(), user.getId(), isAdmin,
+                        Status.NORMAL.equals(currentUser.getStatus()));
+                throw new AuthException("权限不足，无法修改他人信息", 403);
+            }
+            log.info("管理员{}正在修改用户{}的信息", currentUser.getId(), user.getId());
+        }
+        // 3.2 修改自己：保护敏感字段
+        else {
+            // 非管理员不能修改自己的角色和状态
+            if (!isAdmin) {
+                if (!Objects.equals(currentUser.getRole(), user.getRole()) ||
+                        !Objects.equals(currentUser.getStatus(), user.getStatus())) {
+                    log.warn("普通用户{}尝试修改自己的敏感字段，role:{}=>{}, status:{}=>{}",
+                            currentUser.getId(),
+                            currentUser.getRole(), user.getRole(),
+                            currentUser.getStatus(), user.getStatus());
+                    // 强制使用原值
+                    user.setRole(currentUser.getRole());
+                    user.setStatus(currentUser.getStatus());
+                }
+            }
+            // 状态异常的管理员也不能修改自己的角色和状态
+            else if (!Status.NORMAL.equals(currentUser.getStatus())) {
+                if (!Objects.equals(currentUser.getStatus(), user.getStatus()) ||
+                        !Objects.equals(currentUser.getRole(), user.getRole())) {
+                    log.warn("异常状态管理员{}尝试修改自己的敏感字段", currentUser.getId());
+                    // 强制使用原值
+                    user.setStatus(currentUser.getStatus());
+                    user.setRole(currentUser.getRole());
+                }
+            }
+            log.info("用户{}正在修改自己的信息", currentUser.getId());
+        }
+
+        // TODO: 4、补全更新用户信息
+        user.setUpdateTime(LocalDateTime.now());
+
+        // TODO: 5、执行更新，并检查是否成功更新
+        int updateCount = userMapper.updateById(user);
+        if(updateCount != 1){
+            log.error("更新失败，尝试更新用户id为：{}",user.getId());
+            throw new BusinessException("更新失败",400);
+        }
+        log.info("用户{}成功更新了用户{}的信息", currentUser.getId(), user.getId());
     }
 }
