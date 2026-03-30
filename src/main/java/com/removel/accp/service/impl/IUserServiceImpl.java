@@ -94,7 +94,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         // TODO：4、向redis存入用户信息
         user.setPassword(null); //将密码置空，隐藏敏感信息
         String token = UUID.randomUUID().toString();
-        redisDataUtil.set(RedisConstant.LOGIN_CODE_KEY+token,user,RedisConstant.LOGIN_CODE_TTL, TimeUnit.DAYS);
+        redisDataUtil.setWithPhysicalExpire(RedisConstant.LOGIN_CODE_KEY+token,user,RedisConstant.LOGIN_CODE_TTL, TimeUnit.DAYS);
         // TODO: 5、返回用户信息token
         return token;
     }
@@ -116,7 +116,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         }
         // TODO: 2、生成邮箱验证码，将其存储在redis中，并设置过期时间
         String code = UUID.randomUUID().toString();
-        redisDataUtil.set(RedisConstant.REGISTER_EMAIL_KEY+email,code,RedisConstant.REGISTER_CODE_TTL, TimeUnit.MINUTES);
+        redisDataUtil.setWithPhysicalExpire(RedisConstant.REGISTER_EMAIL_KEY+email,code,RedisConstant.REGISTER_CODE_TTL, TimeUnit.MINUTES);
         // TODO: 3、发送邮件，包含验证码
         emailUtil.sendEmail(email,"ACCP注册账号验证码","您的验证码为："+code);
         // TODO: 4、返回成功信息
