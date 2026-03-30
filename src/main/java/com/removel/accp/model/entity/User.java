@@ -18,6 +18,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @TableName("user")
 public class User {
+    /**
+     * 用户表，代表一个用户
+     */
     //主键id，自增
     @TableId(value = "id",type = IdType.AUTO)
     private Integer id;

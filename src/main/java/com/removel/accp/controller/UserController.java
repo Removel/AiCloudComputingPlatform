@@ -7,9 +7,7 @@ import com.removel.accp.model.request.UserRequest;
 import com.removel.accp.model.response.UserResponse;
 import com.removel.accp.service.IUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

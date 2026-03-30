@@ -194,7 +194,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
             return ;
         }
         // 1.2:token有效，判断用户id是否一致，防止被盗用下线
-        if(user.getId()!=id) {
+        if(user.getId().equals(id)) {
             log.error("用户id与通过token获取的id不一致，当前用户id为：{}，token获取的用户id为：{}",id,user.getId());
             throw new ParamValidationException("用户id与token不匹配",400);
         }
@@ -233,7 +233,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         log.info("当前正在操作的用户为：{}",currentUser);
         // TODO: 2、权限判断
         // 逻辑：不是自己并且不是管理员且管理员状态不对的无法操作
-        if (currentUser.getId() != id &&
+        if (currentUser.getId().equals(id) &&
                 (!currentUser.getRole().equals(UserRole.ADMIN) || !currentUser.getStatus().equals(Status.NORMAL))){
             log.error("当前用户删除权限不足，当前用户id为：{}，想要操作的id为：{}",currentUser.getId(),id);
             throw new AuthException("权限不足",403);
@@ -269,7 +269,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         }
 
         // TODO: 3、判断权限：
-        boolean isSelf = currentUser.getId()==user.getId();
+        boolean isSelf = currentUser.getId().equals(user.getId());
         boolean isAdmin = UserRole.ADMIN.equals(currentUser.getRole());
         boolean isAdminNormal = isAdmin && Status.NORMAL.equals(currentUser.getStatus());
 
@@ -285,27 +285,42 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
         }
         // 3.2 修改自己：保护敏感字段
         else {
-            // 非管理员不能修改自己的角色和状态
+            // 非管理员不能修改自己的角色和状态和余额和创建时间
             if (!isAdmin) {
                 if (!Objects.equals(currentUser.getRole(), user.getRole()) ||
-                        !Objects.equals(currentUser.getStatus(), user.getStatus())) {
-                    log.warn("普通用户{}尝试修改自己的敏感字段，role:{}=>{}, status:{}=>{}",
+                        !Objects.equals(currentUser.getStatus(), user.getStatus())||
+                        !Objects.equals(currentUser.getCreateTime(), user.getCreateTime()) ||
+                        !Objects.equals(currentUser.getRemainingComputePower(), user.getRemainingComputePower())) {
+                    log.warn("普通用户{}尝试修改自己的敏感字段，role:{}=>{}, status:{}=>{},createTime:{}=>{},remainComputePower:{}=>{}",
                             currentUser.getId(),
                             currentUser.getRole(), user.getRole(),
-                            currentUser.getStatus(), user.getStatus());
+                            currentUser.getStatus(), user.getStatus(),
+                            currentUser.getCreateTime(), user.getCreateTime(),
+                            currentUser.getRemainingComputePower(), user.getRemainingComputePower());
                     // 强制使用原值
                     user.setRole(currentUser.getRole());
                     user.setStatus(currentUser.getStatus());
+                    user.setCreateTime(currentUser.getCreateTime());
+                    user.setRemainingComputePower(currentUser.getRemainingComputePower());
                 }
             }
-            // 状态异常的管理员也不能修改自己的角色和状态
+            // 状态异常的管理员也不能修改自己的角色和状态和余额
             else if (!Status.NORMAL.equals(currentUser.getStatus())) {
-                if (!Objects.equals(currentUser.getStatus(), user.getStatus()) ||
-                        !Objects.equals(currentUser.getRole(), user.getRole())) {
-                    log.warn("异常状态管理员{}尝试修改自己的敏感字段", currentUser.getId());
+                if (!Objects.equals(currentUser.getRole(), user.getRole()) ||
+                        !Objects.equals(currentUser.getStatus(), user.getStatus())||
+                        !Objects.equals(currentUser.getCreateTime(), user.getCreateTime()) ||
+                        !Objects.equals(currentUser.getRemainingComputePower(), user.getRemainingComputePower())) {
+                    log.warn("状态异常的管理员用户{}尝试修改自己的敏感字段，role:{}=>{}, status:{}=>{},createTime:{}=>{},remainComputePower:{}=>{}",
+                            currentUser.getId(),
+                            currentUser.getRole(), user.getRole(),
+                            currentUser.getStatus(), user.getStatus(),
+                            currentUser.getCreateTime(), user.getCreateTime(),
+                            currentUser.getRemainingComputePower(), user.getRemainingComputePower());
                     // 强制使用原值
-                    user.setStatus(currentUser.getStatus());
                     user.setRole(currentUser.getRole());
+                    user.setStatus(currentUser.getStatus());
+                    user.setCreateTime(currentUser.getCreateTime());
+                    user.setRemainingComputePower(currentUser.getRemainingComputePower());
                 }
             }
             log.info("用户{}正在修改自己的信息", currentUser.getId());
