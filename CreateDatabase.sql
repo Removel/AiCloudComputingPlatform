@@ -33,7 +33,6 @@ CREATE TABLE `server_product` (
                                   `id` BIGINT NOT NULL COMMENT '主键ID',
                                   `machine_id` BIGINT DEFAULT NULL COMMENT '所属服务器ID（关联server_machine表的id）',
                                   `product_name` VARCHAR(100) DEFAULT NULL COMMENT '商品名称',
-                                  `rental_type` TINYINT DEFAULT NULL COMMENT '租赁类型（1-按时，2-按天，3-按月，4-自定义）',
                                   `rental_hours` INT DEFAULT NULL COMMENT '租赁时长（单位：小时）',
                                   `consume_compute_power` INT DEFAULT NULL COMMENT '消耗算力',
                                   `price` INT DEFAULT NULL COMMENT '商品价格（单位：分）',

@@ -20,15 +20,12 @@ public class ServerMachine {
     /**
      * 服务器商铺表，代表一台物理服务器
      */
-    // 主键ID
+    // 主键ID，使用雪花算法
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
     // 服务器名称/标识
     @TableField("server_name")
     private String serverName;
-    @TableField("specification")
-    // 服务器规格描述（如：NVIDIA A100 80GB），使用json格式记录
-    private String specification;
     // 总算力额度（单位：算力点）
     @TableField("total_compute_power")
     private Integer totalComputePower;
@@ -44,6 +41,10 @@ public class ServerMachine {
     // 更新时间
     @TableField("update_time")
     private LocalDateTime updateTime;
-
-
+    // 服务器ip
+    @TableField("server_ip")
+    private String serverIp;
+    // 服务器配置类
+    @TableField("spec")
+    private ServerSpec spec;
 }

@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("server_product")
-public class ServerProduct {
+public class ServerRentalRegularCoupon {
     /**
-     * 服务器租赁商品表，代表一个租赁套餐
+     * 服务器租赁商品表，代表一个租赁套餐，正常版本
      */
     // 主键ID
     @TableId(value = "id",type = IdType.ASSIGN_ID)
@@ -28,18 +28,12 @@ public class ServerProduct {
     // 商品名称（如：基础GPU服务器1天）
     @TableField("product_name")
     private String productName;
-    // 租赁类型（1-按时，2-按天，3-按月，4-自定义）
-    @TableField("rental_type")
-    private Integer rentalType;
-    // 租赁时长（单位：小时）
-    @TableField("rental_hours")
-    private Integer rentalHours;
-    // 消耗算力（每小时/整个套餐消耗的算力点数）
+    // 租赁时长（单位：分钟）
+    @TableField("rental_minutes")
+    private Integer rentalMinutes;
+    // 消耗算力（整个套餐消耗的算力点数）
     @TableField("consume_compute_power")
     private Integer computePower;
-    // 商品价格（单位：分）
-    @TableField("price")
-    private Integer price;
     // 适用场景描述
     @TableField("scene_desc")
     private String sceneDesc;
@@ -52,4 +46,7 @@ public class ServerProduct {
     // 更新时间
     @TableField("update_time")
     private LocalDateTime updateTime;
+    // 券种类，0-普通券，1-秒杀券，默认为0
+    @TableField("type")
+    private Integer type;
 }

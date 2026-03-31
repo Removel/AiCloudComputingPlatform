@@ -185,6 +185,7 @@ public class RedisDataUtil {
         return r;
     }
 
+    //使用互斥锁查询，解决缓存击穿的问题
     public <R, ID> R queryWithMutex(
             String keyPrefix, ID id, Class<R> type, Function<ID, R> dbFallback, Long time, TimeUnit unit) {
         String key = keyPrefix + id;
