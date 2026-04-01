@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.events.Event;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutorService;
@@ -154,7 +153,7 @@ public class RedisDataUtil {
         // 4.2:过期，执行缓存重建
         // TODO:5、执行缓存重建
         //5.1：尝试获取锁
-        String lockKey = RedisConstant.LOCK_SHOP_KEY + id;
+        String lockKey = RedisConstant.LOCK_MACHINE_KEY + id;
         //5.2：得到获取锁的情况
         boolean isLock = tryLock(lockKey);
         //5.3：如果获取成功：
@@ -204,7 +203,7 @@ public class RedisDataUtil {
 
         // TODO:3.实现缓存重建
         // 3.1:获取互斥锁
-        String lockKey = RedisConstant.LOCK_SHOP_KEY + id;
+        String lockKey = RedisConstant.LOCK_MACHINE_KEY + id;
         R r = null;
         try {
             boolean isLock = tryLock(lockKey);

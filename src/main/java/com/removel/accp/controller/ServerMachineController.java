@@ -1,5 +1,6 @@
 package com.removel.accp.controller;
 
+import com.removel.accp.annotation.LogOperation;
 import com.removel.accp.model.Result;
 import com.removel.accp.model.entity.ServerMachine;
 import com.removel.accp.model.enums.Status;
@@ -24,6 +25,7 @@ public class ServerMachineController {
     }
 
     //增加单个服务器
+    @LogOperation
     @PostMapping()
     public Result<?> addMachine(@RequestBody ServerMachineRequest serverMachineRequest){
         log.info("增加单个服务器，增加对象为：{}",serverMachineRequest.getNewServerMachine());
@@ -33,6 +35,7 @@ public class ServerMachineController {
     }
 
     //删除单个服务器
+    @LogOperation
     @DeleteMapping("/{id}")
     public Result<?> deleteMachine(@PathVariable Long id){
         log.info("删除单个服务器，删除对象为：{}",id);
@@ -42,6 +45,7 @@ public class ServerMachineController {
     }
 
     //更新单个服务器信息
+    @LogOperation
     @PutMapping()
     public Result<?> updateMachine(@RequestBody ServerMachineRequest serverMachineRequest){
         log.info("更新单个服务器，更新对象id为：{}，更新内容为：{}",serverMachineRequest.getUpdateServerMachine().getId(),serverMachineRequest.getUpdateServerMachine());
@@ -51,6 +55,7 @@ public class ServerMachineController {
     }
 
     //根据id查询单个服务器
+    @LogOperation
     @GetMapping("/{id}")
     public Result<ServerMachineResponse> getMachineById(@PathVariable Long id){
         log.info("根据id查询单个服务器，查询对象id为：{}",id);
@@ -61,16 +66,18 @@ public class ServerMachineController {
     }
 
     //分页查询服务器列表
+    @LogOperation
     @GetMapping("/list")
     public Result<ServerMachineResponse> getMachineList(@RequestParam Integer page , @RequestParam Integer size , @RequestBody ServerMachineRequest serverMachineRequest){
         log.info("分页查询服务器列表，查询服务器模板对象为：{}",serverMachineRequest.getServerMachineTemplate());
         ServerMachineResponse serverMachineResponse = new ServerMachineResponse();
-        serverMachineResponse.setServerMachineList(serverMachineService.getMachineList(page,size,serverMachineRequest.getServerMachineTemplate()));
+        serverMachineResponse.setServerMachines(serverMachineService.getMachineList(page,size,serverMachineRequest.getServerMachineTemplate()));
         log.info("查询成功");
         return Result.success(serverMachineResponse);
     }
 
     //修改服务器上下架状态
+    @LogOperation
     @PutMapping("/status")
     public Result<?> updateMachineStatus(@RequestParam Long id , @RequestParam Status status){
         log.info("修改服务器上下架状态，修改对象id为：{}，修改状态为：{}",id,status);

@@ -32,7 +32,7 @@ public class ServerMachine {
     // 已占用算力额度
     @TableField("occupied_compute_power")
     private Integer occupiedComputePower;
-    // 服务器状态状态
+    // 服务器状态
     @TableField("status")
     private Status status;
     // 创建时间
@@ -42,8 +42,8 @@ public class ServerMachine {
     @TableField("update_time")
     private LocalDateTime updateTime;
     // 服务器ip
-    @TableField("server_ip")
-    private String serverIp;
+    @TableField("ip")
+    private String ip;
     // 服务器配置类
     @TableField("spec")
     private ServerSpec spec;

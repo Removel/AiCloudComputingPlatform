@@ -24,9 +24,16 @@ public class GlobalExceptionHandler {
         return Result.fail(e.getCode(), e.getMessage());
     }
 
+    @ExceptionHandler(ResourceMissingException.class)
+    public Result<String> ResourceMissingExceptionHandler(ResourceMissingException e) {
+        return Result.fail(e.getCode(), e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public Result<String> exceptionHandler(Exception e) {
         log.error("系统异常", e);
         return Result.fail(500, "系统异常");
     }
+
+
 }

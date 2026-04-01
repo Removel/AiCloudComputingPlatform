@@ -50,3 +50,6 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mapper/*.xml
+  global-config:
+    db-config:
+      update-strategy: NOT_NULL
