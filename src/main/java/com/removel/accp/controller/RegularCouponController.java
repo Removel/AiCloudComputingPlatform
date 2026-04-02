@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/product")
-public class ServerRentalController {
+@RequestMapping("/api/regular")
+public class RegularCouponController {
 }

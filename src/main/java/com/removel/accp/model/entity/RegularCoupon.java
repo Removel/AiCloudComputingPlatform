@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("server_product")
-public class ServerRentalRegularCoupon {
+@TableName("server_rental_regular_coupon")
+public class RegularCoupon {
     /**
      * 服务器租赁商品表，代表一个租赁套餐，正常版本
      */
@@ -24,7 +24,7 @@ public class ServerRentalRegularCoupon {
     private Long id;
     // 所属服务器ID（商铺ID）
     @TableField("machine_id")
-    private Long machineId;
+    private Long serverMachineId;
     // 商品名称（如：基础GPU服务器1天）
     @TableField("product_name")
     private String productName;
@@ -34,6 +34,9 @@ public class ServerRentalRegularCoupon {
     // 消耗算力（整个套餐消耗的算力点数）
     @TableField("consume_compute_power")
     private Integer computePower;
+    // 商品价格（单位：分）
+    @TableField("price")
+    private Integer price;
     // 适用场景描述
     @TableField("scene_desc")
     private String sceneDesc;
