@@ -8,6 +8,7 @@ import com.removel.accp.service.ISecKillCouponService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,5 +31,13 @@ public class SecKillCouponController {
         log.info("添加秒杀优惠券成功");
         return Result.success();
     }
+
+    @PostMapping("/buy")
+    public Result<?> buySecKillCoupon(@RequestBody SecKillCouponRequest secKillCouponRequest){
+        iSecKillCouponService.buySecKillCoupon(secKillCouponRequest.getSeckillCouponId());
+        return Result.success();
+    }
+
+
 
 }

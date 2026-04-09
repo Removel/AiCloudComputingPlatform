@@ -33,6 +33,11 @@ public class CouponOrder {
         private Integer payType;
 
         /**
+        * 购买的代金券种类:0-普通，1-秒杀
+        */
+        private Integer couponType;
+
+        /**
          * 订单状态，1：未支付；2：已支付；3：已核销；4：已取消；5：已退款
          */
         private Integer status;

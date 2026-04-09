@@ -10,6 +10,6 @@ public interface ICouponOrderService extends IService<CouponOrder> {
     List<CouponOrder> list(int userId);
 
     //内部调用的创建方法
-    void createCouponOrder(Integer userId,Long couponId);
+    void createCouponOrder(Integer userId,Long couponId,int type);
 
 }

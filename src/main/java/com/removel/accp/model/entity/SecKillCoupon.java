@@ -2,12 +2,13 @@ package com.removel.accp.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 //算力秒杀商品实体类
+@Getter
+@Setter
 @TableName("server_rental_sec_kill_coupon")
 @NoArgsConstructor
 @AllArgsConstructor

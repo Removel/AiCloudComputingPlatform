@@ -65,7 +65,7 @@ public class IRegularCouponImpl extends ServiceImpl<RegularCouponMapper, Regular
         // TODO:3:更新当前用户余额
         UserHolder.getUser().setRemainingComputePower(UserHolder.getUser().getRemainingComputePower()-exist.getPrice());
         // TODO:4:尝试创建订单
-        iCouponOrderService.createCouponOrder(userId,couponId);
+        iCouponOrderService.createCouponOrder(userId,couponId,0);
         // TODO:5:返回结果
         log.info("购买成功");
     }
