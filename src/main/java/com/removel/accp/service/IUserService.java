@@ -21,4 +21,6 @@ public interface IUserService extends IService<User> {
     void deleteUser(Integer id);
 
     void updateUser(User user);
+
+    void deductRemainingComputePower(Integer id, Integer cost);
 }

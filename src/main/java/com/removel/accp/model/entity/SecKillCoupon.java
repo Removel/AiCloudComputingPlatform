@@ -19,7 +19,7 @@ public class SecKillCoupon extends RegularCoupon {
     @TableField("inventory")
     private Integer inventory;
 
-    // 剩余库存（秒杀核心！必须有！）
+    // 剩余库存
     @TableField("surplus_inventory")
     private Integer surplusInventory;
 

@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.removel.accp.exception.AuthException;
 import com.removel.accp.exception.BusinessException;
@@ -336,5 +337,30 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, User> implements I
             throw new BusinessException("更新失败",400);
         }
         log.info("用户{}成功更新了用户{}的信息", currentUser.getId(), user.getId());
+    }
+
+    @Transactional
+    @Override
+    public void deductRemainingComputePower(Integer userId, Integer cost) {
+        //TODO:1:使用悲观锁,锁住用户
+        User user =  this.lambdaQuery()
+                .eq(User::getId, userId)
+                .last("FOR UPDATE")
+                .one();
+        //TODO:2:判断余额是否足够
+        if (user.getRemainingComputePower() < cost) {
+            throw new BusinessException("余额不足", 402);
+        }
+        //TODO:3:扣减余额
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.set(User::getRemainingComputePower, user.getRemainingComputePower() - cost)
+                .eq(User::getId, userId);
+        boolean result = this.update(updateWrapper);
+        //TODO:4:判断扣减是否成功
+        if (!result) {
+            log.error("扣减余额失败，尝试扣减用户id为：{}的余额，扣减金额为：{}", userId, cost);
+            throw new BusinessException("扣减余额失败", 500);
+        }
+        log.info("扣减余额成功，用户id为：{}，扣减金额为：{}", userId, cost);
     }
 }

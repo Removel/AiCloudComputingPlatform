@@ -20,12 +20,12 @@ public class CouponOrder {
         /**
          * 下单的用户id
          */
-        private Long userId;
+        private Integer userId;
 
         /**
          * 购买的代金券id
          */
-        private Long voucherId;
+        private Long couponId;
 
         /**
          * 支付方式 1：余额支付；2：支付宝；3：微信
