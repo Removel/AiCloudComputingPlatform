@@ -27,10 +27,6 @@ public class CouponOrder {
          */
         private Long couponId;
 
-        /**
-         * 支付方式 1：余额支付；2：支付宝；3：微信
-         */
-        private Integer payType;
 
         /**
         * 购买的代金券种类:0-普通，1-秒杀

@@ -73,7 +73,7 @@ public class ICouponOrderServiceImpl extends ServiceImpl<CouponOrderMapper, Coup
         newCouponOrder.setUserId(userId);
         newCouponOrder.setCouponId(couponId);
         newCouponOrder.setCreateTime(LocalDateTime.now());
-        newCouponOrder.setStatus(1);
+        newCouponOrder.setStatus(2);
         newCouponOrder.setUpdateTime(LocalDateTime.now());
         newCouponOrder.setCouponType(type);
         // 3.3.保存与验证
