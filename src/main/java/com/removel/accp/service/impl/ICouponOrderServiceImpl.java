@@ -57,12 +57,15 @@ public class ICouponOrderServiceImpl extends ServiceImpl<CouponOrderMapper, Coup
             log.info("订单已存在，幂等跳过: userId={}, couponId={}", userId, couponId);
             return; // 或直接返回，不抛异常
         }
-        // TODO:2.扣减数据库库存
-        boolean res = iSecKillCouponService.updateSecKillCouponSurplusInventory(couponId,1);
-        if(!res){
-            log.error("扣减库存失败,数据库库存不足");
-            throw new BusinessException("数据库库存不足",500);
+        // TODO:2.如果是秒杀券那么扣减数据库库存，否则不用扣减
+        if(type == 1){
+            boolean res = iSecKillCouponService.updateSecKillCouponSurplusInventory(couponId,1);
+            if(!res){
+                log.error("扣减库存失败,数据库库存不足");
+                throw new BusinessException("数据库库存不足",500);
+            }
         }
+
         // TODO:3:创建订单
         // 3.1.对象实例化
         CouponOrder newCouponOrder = new CouponOrder();
