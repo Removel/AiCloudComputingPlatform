@@ -55,13 +55,15 @@
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>4.0.1</version>
         </dependency>
-        <!--SpringAi依赖-->
-        <!-- Source: https://mvnrepository.com/artifact/org.springframework.ai/spring-ai -->
+
+        <!--后面等到需要了再加上bom管理吧~-->
+
+        <!--SpringAi-Ollama依赖-->
+        <!-- Source: https://mvnrepository.com/artifact/org.springframework.ai/spring-ai-ollama-spring-boot-starter -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai</artifactId>
+            <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
             <version>1.0.0-M6</version>
-            <type>pom</type>
             <scope>compile</scope>
         </dependency>
         <!--SpringAOP依赖 -->

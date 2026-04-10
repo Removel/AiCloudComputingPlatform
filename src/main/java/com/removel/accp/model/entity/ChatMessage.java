@@ -20,7 +20,7 @@ public class ChatMessage {
 
     // 标记这个信息归属的对话id
     @TableField("session_id")
-    private Integer sessionId;
+    private Long sessionId;
 
     // 这个信息的内容
     @TableField("content")

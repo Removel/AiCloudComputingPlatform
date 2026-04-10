@@ -43,6 +43,14 @@ spring:
             enable: true
           socketFactory:
             class: javax.net.ssl.SSLSocketFactory
+  ai:
+    ollama:
+      base-url: http://100.70.8.11:11434  # Ollama 服务的默认地址
+      chat:
+        model: gemma3:4b
+        options:
+          temperature: 0.7  # 随机性
+          max-tokens: 2048  # 最大长度
 
 #Mybatis的相关配置
 mybatis-plus:

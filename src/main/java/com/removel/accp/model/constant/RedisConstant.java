@@ -22,4 +22,7 @@ public class RedisConstant {
     public static volatile boolean RUNNING = true;
     public static final String SECKILL_ORDER_DEAD_QUEUE_KEY = "stream:seckill:order:dead:";
 
+    public static final String CHAT_SESSION_KEY = "chat:session:";
+
+
 }
