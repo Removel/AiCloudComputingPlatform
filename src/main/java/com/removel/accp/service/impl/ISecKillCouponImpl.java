@@ -40,7 +40,10 @@ public class ISecKillCouponImpl extends ServiceImpl<SecKillCouponMapper, SecKill
     private final ServerMachineMapper serverMachineMapper;
     private final StringRedisTemplate stringRedisTemplate;
 
-    public ISecKillCouponImpl(ServerMachineMapper serverMachineMapper, RedisDataUtil redisDataUtil, SecKillCouponMapper secKillCouponMapper, StringRedisTemplate stringRedisTemplate) {
+    public ISecKillCouponImpl(ServerMachineMapper serverMachineMapper,
+                              RedisDataUtil redisDataUtil,
+                              SecKillCouponMapper secKillCouponMapper,
+                              StringRedisTemplate stringRedisTemplate) {
         this.redisDataUtil = redisDataUtil;
         this.secKillCouponMapper = secKillCouponMapper;
         this.serverMachineMapper = serverMachineMapper;

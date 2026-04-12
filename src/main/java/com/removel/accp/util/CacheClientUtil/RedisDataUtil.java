@@ -6,12 +6,17 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.removel.accp.model.constant.RedisConstant;
+import com.removel.accp.util.TriFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.yaml.snakeyaml.events.CollectionEndEvent;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -232,5 +237,73 @@ public class RedisDataUtil {
         }
         // TODO:6.返回
         return r;
+    }
+
+
+    //从列表读取最近的指定数量个对象
+    public <ID,R> List<R> queryListWithPassThrough(
+            String keyPrefix,
+            ID id,
+            Class<R> type,
+            long listStart,
+            long listEnd,
+            TriFunction<ID, Long, Long, List<R>> dbFallback,
+            Long time,
+            TimeUnit timeUnit){
+        // TODO:1、拼接字符串前缀
+        String key = keyPrefix+id;
+        // TODO:2、从redis查询缓存
+        List<String> stringList = stringRedisTemplate.opsForList().range(key, listStart, listEnd);
+        // redis中存在该key的list
+        if(stringList!=null){
+            // 空列表 → 直接返回空集合，不走数据库，缓存过期了的话会导致连列表都不存在
+            if (stringList.isEmpty()) {
+                return Collections.emptyList();
+            }
+            // TODO:3、存在，解析缓存数据
+            List<R> resultList = new ArrayList<>(stringList.size());
+            stringList.forEach(s->{
+                R r = JSONUtil.toBean(s, type);
+                resultList.add(r);
+            });
+            // TODO:4、返回结果
+            return resultList;
+        }
+        // TODO:5、不存在，根据id查询数据库
+        List<R> resultList = dbFallback.apply(id,-listEnd-1,-listStart-1);  //将redis的索引转化为mysql的索引，比如-10~-1-》0-9，注意顺序!
+        // TODO:6、数据库结果存在将结果存入redis当中
+        if(resultList!=null&&!resultList.isEmpty()){
+            // TODO:7、存在，存入redis
+            // warning: 这里在面对大量个数内容的时候会有性能问题
+            resultList.forEach(r-> {
+                String s = JSONUtil.toJsonStr(r);
+                stringRedisTemplate.opsForList().rightPush(key, s);
+            });
+            // TODO:8、设置物理过期时间
+            stringRedisTemplate.expire(key,time,timeUnit);
+        }
+        // TODO:9、数据库结果不存在，存入空值
+        else {
+            // TODO:10、存入空值
+            // 修改：存入一个简单的空字符串标记，而不是 Collections.EMPTY_LIST
+            // 这样解析时不容易出错，且占用空间极小
+            stringRedisTemplate.opsForList().rightPush(key, RedisConstant.CACHE_LIST_NULL_VAL);
+            stringRedisTemplate.expire(key, RedisConstant.CACHE_NULL_TTL, TimeUnit.MINUTES);
+            return null;
+        }
+        // TODO:11、返回
+        return resultList;
+    }
+
+    //将指定对象从右边添加到列表中
+    public <ID,R> void RPushToList(String keyPrefix, ID id, R r, Long time, TimeUnit timeUnit) {
+        // TODO:1、拼接字符串前缀
+        String key = keyPrefix + id;
+        // TODO:2、将对象转换为json字符串
+        String s = JSONUtil.toJsonStr(r);
+        // TODO:3、将json字符串添加到列表中
+        stringRedisTemplate.opsForList().rightPush(key, s);
+        // TODO:4、设置过期时间
+        stringRedisTemplate.expire(key, time, timeUnit);
     }
 }

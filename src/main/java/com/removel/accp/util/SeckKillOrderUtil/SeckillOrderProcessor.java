@@ -4,11 +4,10 @@ package com.removel.accp.util.SeckKillOrderUtil;
 // 用于异步处理redis的stream的消息队列当中的订单
 // 或许会不同与黑马点评，这里更相信使用ai的内容
 
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.removel.accp.model.constant.RedisConstant;
-import com.removel.accp.model.entity.SecKillCoupon;
 import com.removel.accp.service.ICouponOrderService;
 import com.removel.accp.service.ISecKillCouponService;
+import com.removel.accp.util.MessageQueueProcessor;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class SeckillOrderProcessor {
+public class SeckillOrderProcessor implements MessageQueueProcessor {
 
     // 构造器注入初始化
     private final StringRedisTemplate stringRedisTemplate;  //redisTemplate注入
@@ -39,6 +38,7 @@ public class SeckillOrderProcessor {
         this.iCouponOrderService = iCouponOrderService;
     }
 
+    @Override
     @PostConstruct
     public void init() {
         initConsumerGroup();    //初始化消费者组
@@ -46,7 +46,8 @@ public class SeckillOrderProcessor {
     }
 
     // 初始化消费者组
-    private void initConsumerGroup(){
+    @Override
+    public void initConsumerGroup(){
         try{
             // 创建消费者组
             stringRedisTemplate.opsForStream().createGroup(
@@ -59,7 +60,8 @@ public class SeckillOrderProcessor {
     }
 
     // 异步启动消费者线程
-    private void startAsyncProcess(){
+    @Override
+    public void startAsyncProcess(){
         // 创建一个新的消费者线程，用于异步处理秒杀订单消息
         Thread consumerThread = new Thread(() -> {
             // 持续运行循环，只要系统处于运行状态
@@ -131,7 +133,8 @@ public class SeckillOrderProcessor {
     }
 
     // 处理订单消息
-    private void processOrderMessage(MapRecord<String, Object, Object> message){
+    @Override
+    public void processOrderMessage(MapRecord<String, Object, Object> message){
         // TODO:1.从消息中获取订单信息
         Map<Object, Object> value = message.getValue();
         Long seckillCouponId = Long.valueOf(value.get("seckillCouponId").toString());
@@ -156,9 +159,11 @@ public class SeckillOrderProcessor {
         }
         return 0;
     }
+
+    @Override
     // 处理处理失败的队列消息
     // 这里我们使用重试2次+加入死信队列的方法
-    private void handleFailedMessage(MapRecord<String, Object, Object> message, Exception e) {
+    public void handleFailedMessage(MapRecord<String, Object, Object> message, Exception e) {
         int retryCount = getRetryCount(message);
 
         if (retryCount < 2) {
@@ -196,6 +201,7 @@ public class SeckillOrderProcessor {
 
     // 关闭线程
     @PreDestroy
+    @Override
     public void destroy(){
         RedisConstant.RUNNING = false;
         log.info("秒杀订单消费者线程已停止");

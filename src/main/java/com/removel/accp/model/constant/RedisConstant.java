@@ -1,5 +1,6 @@
 package com.removel.accp.model.constant;
 
+import java.security.PublicKey;
 import java.util.UUID;
 
 public class RedisConstant {
@@ -24,5 +25,8 @@ public class RedisConstant {
 
     public static final String CHAT_SESSION_KEY = "chat:session:";
 
+    public static final String CHAT_MESSAGE_QUEUE_KEY = "list:chat:message:";
+    public static final Long CHAT_MESSAGE_QUEUE_TTL = 10L;
 
+    public static final String CACHE_LIST_NULL_VAL = "null_list";
 }

@@ -1,16 +1,16 @@
 package com.removel.accp.model.response;
 
-import com.removel.accp.model.entity.ChatMessage;
 import lombok.Data;
 import org.springframework.ai.chat.messages.Message;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
 @Data
-public class ChatResponse {
+public class MyChatResponse {
 
     //回答文本
-    private Message answer;
+    private Flux<String> answerText;
 
     //历史对话列表
     private List<Message> sessionHistory;

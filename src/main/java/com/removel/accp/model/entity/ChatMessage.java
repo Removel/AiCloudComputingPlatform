@@ -1,6 +1,8 @@
 package com.removel.accp.model.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +30,7 @@ public class ChatMessage {
 
     // 这个信息在这轮对话中的序号
     @TableField("content_id")
+    @TableId(type = IdType.AUTO)
     private Integer contentId;
 
     // 这个信息在这轮对话中的角色:user/system/assistant
@@ -35,7 +38,7 @@ public class ChatMessage {
     private String role;
 
     // 时间戳
-    @TableField("time_stamp")
+    @TableField("timestamp")
     private LocalDateTime timeStamp;
 
 }
