@@ -6,7 +6,7 @@ ACCP (AI Cloud Computing Platform) 是一个基于Spring Boot和AI技术构建�
 
 ACCP是一个集成了大语言模型(LLM)对话功能的云计算平台，用户可以通过平台与AI进行交互，同时管理自己的计算资源。平台支持用户注册登录、算力充值、服务器租赁、优惠券系统等功能，并采用Redis和MySQL进行数据存储，使用Redisson实现分布式锁，保证高并发场景下的数据一致性。
 
-ps：剩下的比较简单的crud操作就懒得写了，基本思路类似于锁、夺标查询、工具类封装等似乎都差不多，这个文档是ai写的有一些问题。
+ps：剩下的比较简单的crud操作就懒得写了，基本思路类似于锁、多表查询、工具类封装等似乎都差不多，这个文档是ai写的有一些问题。
 
 ## 技术栈
 
@@ -116,6 +116,9 @@ ACCP/
 
 7. **seckill_coupon**: 秒杀优惠券表
    - 存储秒杀优惠券信息
+  
+8. **session**：对话id记录表
+   - 存储对话id于用户关系 
 
 ## 快速开始
 
@@ -284,21 +287,8 @@ java -jar target/accp-0.0.1-SNAPSHOT.jar
 
 欢迎提交Issue和Pull Request来帮助改进项目。
 
-## 许可证
-
-本项目采用 [MIT 许可证](LICENSE)
-
 ## 联系方式
 
 - 项目地址: https://github.com/Removel/AiCloudComputingPlatform.git
 - 问题反馈: https://github.com/Removel/AiCloudComputingPlatform/issues
 - 邮箱: accp_official@163.com
-
-## 更新日志
-
-### v0.0.1 (2024-04-12)
-- 初始版本发布
-- 实现用户认证功能
-- 实现AI对话功能
-- 实现服务器租赁功能
-- 实现优惠券系统
